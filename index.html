@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pinpoint Concept - Evenimente oricând, oriunde, cu oricine</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Open+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --teal: #3a8a8c;
+  --teal-dark: #2c6e70;
+  --teal-light: #4da8aa;
+  --orange: #e8751a;
+  --orange-light: #f59e4b;
+  --purple: #6b3fa0;
+  --purple-light: #8b5fc0;
+  --dark: #1a1a2e;
+  --dark2: #16213e;
+  --white: #ffffff;
+  --gray-light: #f4f7f9;
+  --gray: #8892a0;
+  --gray-dark: #4a5568;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', sans-serif; }
+
+.reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease; }
+.reveal.active { opacity: 1; transform: translateY(0); }
+.reveal-left { opacity: 0; transform: translateX(-60px); transition: all 0.8s ease; }
+.reveal-left.active { opacity: 1; transform: translateX(0); }
+.reveal-right { opacity: 0; transform: translateX(60px); transition: all 0.8s ease; }
+.reveal-right.active { opacity: 1; transform: translateX(0); }
+.reveal-scale { opacity: 0; transform: scale(0.8); transition: all 0.6s ease; }
+.reveal-scale.active { opacity: 1; transform: scale(1); }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; width: 100%; z-index: 1000;
+  background: rgba(26,26,46,0.95);
+  backdrop-filter: blur(20px);
+  padding: 0 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 70px;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+nav.scrolled { background: rgba(26,26,46,0.98); box-shadow: 0 4px 30px rgba(0,0,0,0.3); }
+.nav-logo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800; font-size: 1.3rem; color: var(--white);
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none;
+}
+.nav-logo .pin { color: var(--orange); font-size: 1.5rem; }
+.nav-links { display: flex; gap: 30px; list-style: none; }
+.nav-links a {
+  color: rgba(255,255,255,0.7); text-decoration: none;
+  font-family: 'Montserrat', sans-serif; font-weight: 500;
+  font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;
+  transition: color 0.3s; position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0;
+  width: 0; height: 2px; background: var(--orange);
+  transition: width 0.3s;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-links a:hover::after { width: 100%; }
+.nav-cta {
+  background: linear-gradient(135deg, var(--orange), var(--orange-light));
+  color: white; padding: 10px 24px; border-radius: 50px;
+  text-decoration: none; font-family: 'Montserrat', sans-serif;
+  font-weight: 600; font-size: 0.8rem; letter-spacing: 0.5px;
+  transition: all 0.3s; border: none; cursor: pointer;
+}
+.nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(232,117,26,0.4); }
+
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; }
+.hamburger span { width: 25px; height: 2px; background: white; transition: 0.3s; }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--dark) 0%, var(--dark2) 50%, var(--teal-dark) 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  padding: 0 40px;
+}
+.hero::before {
+  content: ''; position: absolute; top: -50%; right: -20%;
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(232,117,26,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: -30%; left: -10%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(107,63,160,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.hero-particles {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  overflow: hidden; z-index: 0;
+}
+.particle {
+  position: absolute; border-radius: 50%;
+  animation: floatParticle linear infinite;
+  opacity: 0.15;
+}
+@keyframes floatParticle {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.15; }
+  90% { opacity: 0.15; }
+  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+
+.hero-content { text-align: center; z-index: 1; max-width: 900px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  padding: 8px 20px; border-radius: 50px;
+  font-family: 'Montserrat', sans-serif; font-size: 0.75rem;
+  color: var(--orange-light); letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 30px;
+  animation: fadeInDown 1s ease;
+}
+.hero-badge .dot { width: 6px; height: 6px; background: var(--orange); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.hero h1 {
+  font-size: 4rem; font-weight: 900; color: var(--white);
+  line-height: 1.1; margin-bottom: 10px;
+  animation: fadeInUp 1s ease 0.2s both;
+}
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--orange), var(--orange-light), var(--purple-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-slogan {
+  font-size: 1.4rem; color: rgba(255,255,255,0.6);
+  font-weight: 300; margin-bottom: 40px;
+  font-family: 'Montserrat', sans-serif;
+  animation: fadeInUp 1s ease 0.4s both;
+}
+.hero-buttons {
+  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+  animation: fadeInUp 1s ease 0.6s both;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--orange), var(--orange-light));
+  color: white; padding: 16px 40px; border-radius: 50px;
+  text-decoration: none; font-family: 'Montserrat', sans-serif;
+  font-weight: 700; font-size: 0.9rem; letter-spacing: 0.5px;
+  transition: all 0.3s; border: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(232,117,26,0.4); }
+.btn-secondary {
+  background: transparent; color: white;
+  padding: 16px 40px; border-radius: 50px;
+  text-decoration: none; font-family: 'Montserrat', sans-serif;
+  font-weight: 600; font-size: 0.9rem;
+  border: 2px solid rgba(255,255,255,0.2);
+  transition: all 0.3s; cursor: pointer;
+}
+.btn-secondary:hover { border-color: var(--teal-light); background: rgba(58,138,140,0.1); }
+
+.hero-stats {
+  display: flex; gap: 60px; justify-content: center; margin-top: 60px;
+  animation: fadeInUp 1s ease 0.8s both;
+}
+.hero-stat { text-align: center; }
+.hero-stat .number {
+  font-family: 'Montserrat', sans-serif; font-size: 2.5rem;
+  font-weight: 800; color: var(--orange);
+}
+.hero-stat .label {
+  font-size: 0.8rem; color: rgba(255,255,255,0.4);
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* SECTIONS */
+section { padding: 100px 40px; }
+.section-header { text-align: center; margin-bottom: 60px; }
+.section-label {
+  font-family: 'Montserrat', sans-serif; font-size: 0.75rem;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--orange); font-weight: 700; margin-bottom: 12px;
+}
+.section-title {
+  font-size: 2.8rem; font-weight: 800; color: var(--dark);
+  line-height: 1.2; margin-bottom: 16px;
+}
+.section-subtitle {
+  font-size: 1.1rem; color: var(--gray); max-width: 600px; margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ABOUT */
+.about { background: var(--white); }
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; max-width: 1200px; margin: 0 auto; align-items: center;
+}
+.about-visual {
+  position: relative;
+}
+.about-card {
+  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+  border-radius: 24px; padding: 50px; color: white;
+  position: relative; overflow: hidden;
+}
+.about-card::before {
+  content: '📍'; position: absolute; top: -20px; right: -20px;
+  font-size: 150px; opacity: 0.08;
+}
+.about-card h3 { font-size: 3.5rem; font-weight: 900; margin-bottom: 8px; }
+.about-card p { font-size: 1.1rem; opacity: 0.8; }
+.about-floating-card {
+  position: absolute; bottom: -30px; right: -30px;
+  background: white; padding: 24px 32px; border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  display: flex; align-items: center; gap: 16px;
+}
+.about-floating-card .icon {
+  width: 50px; height: 50px; background: linear-gradient(135deg, var(--orange), var(--orange-light));
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+.about-floating-card .text { font-family: 'Montserrat', sans-serif; }
+.about-floating-card .text .num { font-size: 1.4rem; font-weight: 800; color: var(--dark); }
+.about-floating-card .text .lbl { font-size: 0.75rem; color: var(--gray); }
+
+.about-content h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 20px; color: var(--dark); }
+.about-content p { color: var(--gray-dark); line-height: 1.8; margin-bottom: 16px; font-size: 1rem; }
+.about-features { display: flex; flex-direction: column; gap: 16px; margin-top: 30px; }
+.about-feature {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'Montserrat', sans-serif; font-weight: 600;
+  color: var(--dark); font-size: 0.95rem;
+}
+.about-feature .check {
+  width: 28px; height: 28px; background: linear-gradient(135deg, var(--teal), var(--teal-light));
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 0.8rem; flex-shrink: 0;
+}
+
+/* SERVICES */
+.services { background: var(--gray-light); }
+.services-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 24px; max-width: 1200px; margin: 0 auto;
+}
+.service-card {
+  background: white; border-radius: 20px; padding: 40px;
+  transition: all 0.4s; position: relative; overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.service-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.1);
+}
+.service-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: linear-gradient(90deg, var(--teal), var(--orange));
+  transform: scaleX(0); transition: transform 0.4s;
+  transform-origin: left;
+}
+.service-card:hover::before { transform: scaleX(1); }
+.service-icon {
+  width: 64px; height: 64px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; margin-bottom: 24px;
+}
+.service-card h3 {
+  font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; color: var(--dark);
+}
+.service-card p { color: var(--gray); line-height: 1.7; font-size: 0.9rem; }
+
+.icon-btl { background: linear-gradient(135deg, rgba(58,138,140,0.12), rgba(58,138,140,0.05)); }
+.icon-concert { background: linear-gradient(135deg, rgba(107,63,160,0.12), rgba(107,63,160,0.05)); }
+.icon-standup { background: linear-gradient(135deg, rgba(232,117,26,0.12), rgba(232,117,26,0.05)); }
+.icon-kids { background: linear-gradient(135deg, rgba(58,138,140,0.12), rgba(58,138,140,0.05)); }
+.icon-drop { background: linear-gradient(135deg, rgba(107,63,160,0.12), rgba(107,63,160,0.05)); }
+.icon-expo { background: linear-gradient(135deg, rgba(232,117,26,0.12), rgba(232,117,26,0.05)); }
+
+/* PORTFOLIO */
+.portfolio { background: var(--white); }
+.portfolio-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; max-width: 1200px; margin: 0 auto;
+}
+.portfolio-item {
+  position: relative; border-radius: 16px; overflow: hidden;
+  aspect-ratio: 4/3; cursor: pointer;
+}
+.portfolio-item img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.6s;
+}
+.portfolio-item:hover img { transform: scale(1.1); }
+.portfolio-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(26,26,46,0.9) 0%, transparent 60%);
+  display: flex; align-items: flex-end; padding: 24px;
+  opacity: 0; transition: opacity 0.4s;
+}
+.portfolio-item:hover .portfolio-overlay { opacity: 1; }
+.portfolio-overlay span {
+  color: white; font-family: 'Montserrat', sans-serif;
+  font-weight: 600; font-size: 0.95rem;
+}
+
+/* CLIENTS */
+.clients { background: var(--dark); color: white; }
+.clients .section-title { color: white; }
+.clients .section-subtitle { color: rgba(255,255,255,0.5); }
+.clients-logos {
+  display: flex; justify-content: center; align-items: center;
+  gap: 60px; flex-wrap: wrap; max-width: 1000px; margin: 0 auto;
+}
+.client-logo {
+  font-family: 'Montserrat', sans-serif; font-weight: 700;
+  font-size: 1.3rem; color: rgba(255,255,255,0.25);
+  transition: all 0.3s; cursor: default;
+  padding: 20px;
+}
+.client-logo:hover { color: rgba(255,255,255,0.7); transform: scale(1.05); }
+
+/* TESTIMONIALS */
+.testimonials { background: var(--gray-light); }
+.testimonials-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 24px; max-width: 1200px; margin: 0 auto;
+}
+.testimonial-card {
+  background: white; border-radius: 20px; padding: 40px;
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.04);
+  transition: all 0.3s;
+}
+.testimonial-card:hover {
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  transform: translateY(-4px);
+}
+.testimonial-quote {
+  font-size: 2.5rem; color: var(--orange); font-family: Georgia, serif;
+  line-height: 1; margin-bottom: 16px;
+}
+.testimonial-card p {
+  color: var(--gray-dark); line-height: 1.8; font-size: 0.95rem;
+  font-style: italic; margin-bottom: 24px;
+}
+.testimonial-author { display: flex; align-items: center; gap: 14px; }
+.testimonial-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--teal-light));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-family: 'Montserrat', sans-serif; font-weight: 700;
+}
+.testimonial-name { font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--dark); font-size: 0.9rem; }
+.testimonial-role { font-size: 0.8rem; color: var(--gray); }
+
+/* CONTACT */
+.contact {
+  background: linear-gradient(135deg, var(--dark) 0%, var(--dark2) 100%);
+  color: white;
+}
+.contact .section-title { color: white; }
+.contact .section-subtitle { color: rgba(255,255,255,0.5); }
+.contact-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; max-width: 1100px; margin: 0 auto;
+}
+.contact-info { display: flex; flex-direction: column; gap: 30px; }
+.contact-item { display: flex; align-items: flex-start; gap: 16px; }
+.contact-icon {
+  width: 50px; height: 50px; border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+.contact-item h4 {
+  font-family: 'Montserrat', sans-serif; font-weight: 700;
+  font-size: 0.95rem; margin-bottom: 4px;
+}
+.contact-item p { color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+.contact-item a { color: var(--orange-light); text-decoration: none; font-size: 0.9rem; }
+
+.contact-form { display: flex; flex-direction: column; gap: 16px; }
+.form-row { display: flex; gap: 16px; }
+.form-row input { flex: 1; }
+.contact-form input, .contact-form textarea, .contact-form select {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 16px 20px;
+  color: white; font-family: 'Open Sans', sans-serif;
+  font-size: 0.9rem; transition: all 0.3s; width: 100%;
+}
+.contact-form input::placeholder, .contact-form textarea::placeholder {
+  color: rgba(255,255,255,0.3);
+}
+.contact-form input:focus, .contact-form textarea:focus, .contact-form select:focus {
+  outline: none; border-color: var(--teal);
+  background: rgba(255,255,255,0.08);
+}
+.contact-form select { appearance: none; cursor: pointer; }
+.contact-form select option { background: var(--dark); color: white; }
+.contact-form textarea { min-height: 120px; resize: vertical; }
+.contact-form .btn-primary { width: 100%; justify-content: center; padding: 18px; font-size: 1rem; }
+
+.social-links { display: flex; gap: 12px; margin-top: 20px; }
+.social-link {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.5); text-decoration: none; font-size: 1.1rem;
+  transition: all 0.3s;
+}
+.social-link:hover {
+  background: var(--orange); color: white;
+  border-color: var(--orange);
+  transform: translateY(-3px);
+}
+
+/* FOOTER */
+footer {
+  background: var(--dark); border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 30px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px;
+}
+footer p { color: rgba(255,255,255,0.3); font-size: 0.8rem; }
+footer a { color: var(--orange); text-decoration: none; }
+
+/* MOBILE */
+@media (max-width: 900px) {
+  .nav-links, .nav-cta { display: none; }
+  .hamburger { display: flex; }
+  .mobile-menu {
+    display: none; position: fixed; top: 70px; left: 0; width: 100%;
+    background: rgba(26,26,46,0.98); padding: 20px 40px 30px;
+    flex-direction: column; gap: 20px; z-index: 999;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    color: rgba(255,255,255,0.7); text-decoration: none;
+    font-family: 'Montserrat', sans-serif; font-size: 1rem;
+    font-weight: 500; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .hero h1 { font-size: 2.5rem; }
+  .hero-slogan { font-size: 1.1rem; }
+  .hero-stats { gap: 30px; }
+  .hero-stat .number { font-size: 1.8rem; }
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .services-grid { grid-template-columns: 1fr; }
+  .portfolio-grid { grid-template-columns: 1fr 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .form-row { flex-direction: column; }
+  section { padding: 60px 20px; }
+  .section-title { font-size: 2rem; }
+  .clients-logos { gap: 30px; }
+}
+@media (max-width: 600px) {
+  .portfolio-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 2rem; }
+}
+
+/* Counter animation */
+.counting { transition: all 0.3s; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <span class="pin">📍</span> PINPOINT <span style="color:var(--orange)">CONCEPT</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">Despre noi</a></li>
+    <li><a href="#services">Servicii</a></li>
+    <li><a href="#portfolio">Portofoliu</a></li>
+    <li><a href="#testimonials">Testimoniale</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="mailto:alexandrustoiciu@gmail.com" class="nav-cta">Solicită ofertă</a>
+  <button class="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" onclick="toggleMenu()">Despre noi</a>
+  <a href="#services" onclick="toggleMenu()">Servicii</a>
+  <a href="#portfolio" onclick="toggleMenu()">Portofoliu</a>
+  <a href="#testimonials" onclick="toggleMenu()">Testimoniale</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+  <a href="mailto:alexandrustoiciu@gmail.com" onclick="toggleMenu()">Solicită ofertă</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span> Agenție de evenimente cu tradiție</div>
+    <h1>
+      Creăm <span class="gradient-text">experiențe</span><br>care rămân în memorie
+    </h1>
+    <p class="hero-slogan">Evenimente oricând, oriunde, cu oricine.</p>
+    <div class="hero-buttons">
+      <a href="mailto:alexandrustoiciu@gmail.com" class="btn-primary">
+        Solicită ofertă →
+      </a>
+      <a href="#services" class="btn-secondary">Descoperă serviciile</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="number" data-target="10">0</div>
+        <div class="label">Ani experiență</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number" data-target="500">0</div>
+        <div class="label">Evenimente realizate</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number" data-target="50">0</div>
+        <div class="label">Clienți mulțumiți</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-grid">
+    <div class="about-visual reveal-left">
+      <div class="about-card">
+        <h3>10+</h3>
+        <p>ani de experiență în industria evenimentelor</p>
+      </div>
+      <div class="about-floating-card">
+        <div class="icon">🎯</div>
+        <div class="text">
+          <div class="num">Toată România</div>
+          <div class="lbl">Acoperire națională</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-content reveal-right">
+      <div class="section-label">Despre noi</div>
+      <h2>Transformăm ideile în evenimente memorabile</h2>
+      <p>Pinpoint Concept este o agenție de evenimente BTL cu sediul în București, zona Basarab, activă pe piața din România de peste un deceniu. De-a lungul anilor, am construit parteneriate solide cu centre comerciale, branduri de top și comunități locale din întreaga țară.</p>
+      <p>De la activări în mall-uri și concerte rock la expoziții interactive și campanii de distribuție, fiecare proiect beneficiază de o abordare strategică, execuție impecabilă și atenție la fiecare detaliu.</p>
+      <div class="about-features">
+        <div class="about-feature"><div class="check">✓</div> Planificare strategică end-to-end</div>
+        <div class="about-feature"><div class="check">✓</div> Echipă experimentată și dedicată</div>
+        <div class="about-feature"><div class="check">✓</div> Acoperire națională - orice locație</div>
+        <div class="about-feature"><div class="check">✓</div> Soluții personalizate pentru fiecare client</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="section-header reveal">
+    <div class="section-label">Servicii</div>
+    <h2 class="section-title">Ce putem face pentru tine</h2>
+    <p class="section-subtitle">Oferim o gamă completă de servicii de evenimente și activări, adaptate nevoilor fiecărui client.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal-scale" style="transition-delay:0.1s">
+      <div class="service-icon icon-btl">🎯</div>
+      <h3>Evenimente BTL & Activări</h3>
+      <p>Activări de brand în centre comerciale, sampling, promoții interactive, jocuri de tip board game gigant și experiențe imersive care atrag și fidelizează consumatorii.</p>
+    </div>
+    <div class="service-card reveal-scale" style="transition-delay:0.2s">
+      <div class="service-icon icon-concert">🎸</div>
+      <h3>Concerte Rock</h3>
+      <p>Organizăm concerte rock de la A la Z: management artiști, sonorizare profesională, lighting design, scenografie și logistică completă pentru experiențe muzicale de neuitat.</p>
+    </div>
+    <div class="service-card reveal-scale" style="transition-delay:0.3s">
+      <div class="service-icon icon-standup">🎤</div>
+      <h3>Spectacole Stand-Up</h3>
+      <p>Producție completă de spectacole de stand-up comedy: booking artiști, amenajare sală, promovare și managementul întregului eveniment pentru seri pline de râs.</p>
+    </div>
+    <div class="service-card reveal-scale" style="transition-delay:0.4s">
+      <div class="service-icon icon-kids">🎨</div>
+      <h3>Evenimente pentru Copii</h3>
+      <p>Ateliere creative, zone de joacă tematice, animatori profesioniști și activități educative care transformă fiecare eveniment într-o aventură pentru cei mici.</p>
+    </div>
+    <div class="service-card reveal-scale" style="transition-delay:0.5s">
+      <div class="service-icon icon-drop">📬</div>
+      <h3>Campanii Dropmail & Pliante</h3>
+      <p>Distribuție profesională de materiale publicitare door-to-door și în zone de trafic intens. Acoperire națională, raportare detaliată și targetare geografică precisă.</p>
+    </div>
+    <div class="service-card reveal-scale" style="transition-delay:0.6s">
+      <div class="service-icon icon-expo">🦋</div>
+      <h3>Expoziții Interactive</h3>
+      <p>Expoziții de fluturi tropicali, reptile exotice și acvaristică. Experiențe educative și fascinante care atrag vizitatori de toate vârstele în centre comerciale și la festivaluri.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section class="portfolio" id="portfolio">
+  <div class="section-header reveal">
+    <div class="section-label">Portofoliu</div>
+    <h2 class="section-title">Din proiectele noastre</h2>
+    <p class="section-subtitle">O selecție din evenimentele și activările realizate în centre comerciale din toată România.</p>
+  </div>
+  <div class="portfolio-grid">
+    <div class="portfolio-item reveal-scale" style="transition-delay:0.1s">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='450' fill='%233a8a8c'%3E%3Crect width='600' height='450' rx='0'/%3E%3Ctext x='300' y='200' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'%3E🎲%3C/text%3E%3Ctext x='300' y='260' text-anchor='middle' fill='rgba(255,255,255,0.7)' font-size='16' font-family='sans-serif'%3EBoard Game Gigant%3C/text%3E%3C/svg%3E" alt="Board Game Gigant">
+      <div class="portfolio-overlay"><span>Board Game Gigant - Mall Activare</span></div>
+    </div>
+    <div class="portfolio-item reveal-scale" style="transition-delay:0.2s">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='450' fill='%236b3fa0'%3E%3Crect width='600' height='450' rx='0'/%3E%3Ctext x='300' y='200' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'%3E🦋%3C/text%3E%3Ctext x='300' y='260' text-anchor='middle' fill='rgba(255,255,255,0.7)' font-size='16' font-family='sans-serif'%3EExpoziție Fluturi%3C/text%3E%3C/svg%3E" alt="Expoziție Fluturi">
+      <div class="portfolio-overlay"><span>Expoziție Fluturi Tropicali</span></div>
+    </div>
+    <div class="portfolio-item reveal-scale" style="transition-delay:0.3s">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='450' fill='%23e8751a'%3E%3Crect width='600' height='450' rx='0'/%3E%3Ctext x='300' y='200' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'%3E🐠%3C/text%3E%3Ctext x='300' y='260' text-anchor='middle' fill='rgba(255,255,255,0.7)' font-size='16' font-family='sans-serif'%3EExpoziție Acvaristică%3C/text%3E%3C/svg%3E" alt="Expoziție Acvaristică">
+      <div class="portfolio-overlay"><span>Expoziție Acvaristică Interactivă</span></div>
+    </div>
+    <div class="portfolio-item reveal-scale" style="transition-delay:0.4s">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='450' fill='%232c6e70'%3E%3Crect width='600' height='450' rx='0'/%3E%3Ctext x='300' y='200' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'%3E🎨%3C/text%3E%3Ctext x='300' y='260' text-anchor='middle' fill='rgba(255,255,255,0.7)' font-size='16' font-family='sans-serif'%3EEvenimente Copii%3C/text%3E%3C/svg%3E" alt="Evenimente Copii">
+      <div class="portfolio-overlay"><span>Evenimente Interactive pentru Copii</span></div>
+    </div>
+    <div class="portfolio-item reveal-scale" style="transition-delay:0.5s">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='450' fill='%238b5fc0'%3E%3Crect width='600' height='450' rx='0'/%3E%3Ctext x='300' y='200' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'%3E🎯%3C/text%3E%3Ctext x='300' y='260' text-anchor='middle' fill='rgba(255,255,255,0.7)' font-size='16' font-family='sans-serif'%3EActivare Outdoor%3C/text%3E%3C/svg%3E" alt="Activare Outdoor">
+      <div class="portfolio-overlay"><span>Activare Outdoor - Paintball Zone</span></div>
+    </div>
+    <div class="portfolio-item reveal-scale" style="transition-delay:0.6s">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='450' fill='%23f59e4b'%3E%3Crect width='600' height='450' rx='0'/%3E%3Ctext x='300' y='200' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'%3E🐍%3C/text%3E%3Ctext x='300' y='260' text-anchor='middle' fill='rgba(255,255,255,0.7)' font-size='16' font-family='sans-serif'%3EExpoziție Reptile%3C/text%3E%3C/svg%3E" alt="Expoziție Reptile">
+      <div class="portfolio-overlay"><span>Expoziție Reptile Exotice</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<section class="clients" id="clients">
+  <div class="section-header reveal">
+    <div class="section-label">Parteneri</div>
+    <h2 class="section-title">Au avut încredere în noi</h2>
+    <p class="section-subtitle">Colaborăm cu cele mai importante centre comerciale și branduri din România.</p>
+  </div>
+  <div class="clients-logos reveal">
+    <div class="client-logo">PROMENADA</div>
+    <div class="client-logo">DÂMBOVIȚA MALL</div>
+    <div class="client-logo">CARREFOUR</div>
+    <div class="client-logo">PEPSI</div>
+    <div class="client-logo">ERA SHOPPING PARK</div>
+    <div class="client-logo">MEGA MALL</div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <div class="section-header reveal">
+    <div class="section-label">Testimoniale</div>
+    <h2 class="section-title">Ce spun partenerii noștri</h2>
+    <p class="section-subtitle">Feedback-ul clienților noștri este cea mai bună carte de vizită.</p>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal-scale" style="transition-delay:0.1s">
+      <div class="testimonial-quote">"</div>
+      <p>Colaborăm cu Pinpoint Concept de peste 3 ani pentru activările din mall. Profesionalism, creativitate și execuție impecabilă de fiecare dată. Evenimentele lor atrag constant trafic suplimentar în centrul nostru comercial.</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">MC</div>
+        <div>
+          <div class="testimonial-name">Maria C.</div>
+          <div class="testimonial-role">Marketing Manager - Centru Comercial</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal-scale" style="transition-delay:0.2s">
+      <div class="testimonial-quote">"</div>
+      <p>Expoziția de fluturi a fost un real succes! Copiii au fost fascinați, iar părinții foarte mulțumiți. Organizarea a fost impecabilă, de la montaj până la dezmontaj. Recomandăm cu încredere.</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">AP</div>
+        <div>
+          <div class="testimonial-name">Andrei P.</div>
+          <div class="testimonial-role">Director Evenimente - Retail Park</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal-scale" style="transition-delay:0.3s">
+      <div class="testimonial-quote">"</div>
+      <p>Campania de distribuție flyere a fost gestionată exemplar. Acoperire exactă conform briefului, raportare transparentă și un ROI excelent. Pinpoint Concept înțelege nevoile clientului și livrează rezultate.</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">DI</div>
+        <div>
+          <div class="testimonial-name">Diana I.</div>
+          <div class="testimonial-role">Brand Manager - FMCG</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="section-header reveal">
+    <div class="section-label">Contact</div>
+    <h2 class="section-title">Hai să lucrăm împreună</h2>
+    <p class="section-subtitle">Spune-ne ce ai nevoie și revenim cu o ofertă personalizată în cel mai scurt timp.</p>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info reveal-left">
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div>
+          <h4>Sediu</h4>
+          <p>București, Zona Basarab</p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📧</div>
+        <div>
+          <h4>Email</h4>
+          <a href="mailto:alexandrustoiciu@gmail.com">alexandrustoiciu@gmail.com</a>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">🌍</div>
+        <div>
+          <h4>Acoperire</h4>
+          <p>Toată România</p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">⏰</div>
+        <div>
+          <h4>Program</h4>
+          <p>Luni - Vineri: 09:00 - 18:00</p>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="https://facebook.com/pinpointconcept" target="_blank" class="social-link">f</a>
+        <a href="https://instagram.com/pinpointconcept" target="_blank" class="social-link">ig</a>
+        <a href="https://tiktok.com/@pinpointconcept" target="_blank" class="social-link">tt</a>
+        <a href="https://linkedin.com/company/pinpointconcept" target="_blank" class="social-link">in</a>
+      </div>
+    </div>
+    <div class="contact-form reveal-right" id="contactForm">
+      <div class="form-row">
+        <input type="text" placeholder="Numele tău" id="formName">
+        <input type="email" placeholder="Email" id="formEmail">
+      </div>
+      <input type="text" placeholder="Compania" id="formCompany">
+      <select id="formService">
+        <option value="" disabled selected>Selectează serviciul dorit</option>
+        <option>Evenimente BTL & Activări</option>
+        <option>Concerte Rock</option>
+        <option>Spectacole Stand-Up</option>
+        <option>Evenimente pentru Copii</option>
+        <option>Campanii Dropmail & Pliante</option>
+        <option>Expoziții (Fluturi / Reptile / Acvaristică)</option>
+        <option>Altceva</option>
+      </select>
+      <textarea placeholder="Descriere proiect..." id="formMessage"></textarea>
+      <button class="btn-primary" onclick="sendEmail()">Trimite mesajul →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Pinpoint Concept. Toate drepturile rezervate.</p>
+  <p>Made with ❤️ in București | <a href="mailto:alexandrustoiciu@gmail.com">alexandrustoiciu@gmail.com</a></p>
+</footer>
+
+<script>
+// Particles
+const particlesEl = document.getElementById('particles');
+const colors = ['var(--teal)', 'var(--orange)', 'var(--purple)'];
+for (let i = 0; i < 30; i++) {
+  const p = document.createElement('div');
+  p.classList.add('particle');
+  const size = Math.random() * 6 + 2;
+  p.style.cssText = `
+    width:${size}px;height:${size}px;left:${Math.random()*100}%;
+    background:${colors[Math.floor(Math.random()*3)]};
+    animation-duration:${Math.random()*15+10}s;
+    animation-delay:${Math.random()*10}s;
+  `;
+  particlesEl.appendChild(p);
+}
+
+// Scroll reveal
+function revealOnScroll() {
+  document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale').forEach(el => {
+    const top = el.getBoundingClientRect().top;
+    if (top < window.innerHeight - 80) el.classList.add('active');
+  });
+}
+window.addEventListener('scroll', revealOnScroll);
+revealOnScroll();
+
+// Nav scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// Counter
+let counted = false;
+function animateCounters() {
+  if (counted) return;
+  const statsSection = document.querySelector('.hero-stats');
+  if (!statsSection) return;
+  const r = statsSection.getBoundingClientRect();
+  if (r.top < window.innerHeight && r.bottom > 0) {
+    counted = true;
+    document.querySelectorAll('.hero-stat .number').forEach(n => {
+      const target = +n.dataset.target;
+      const dur = 2000;
+      const step = target / (dur / 16);
+      let cur = 0;
+      const timer = setInterval(() => {
+        cur += step;
+        if (cur >= target) { cur = target; clearInterval(timer); }
+        n.textContent = Math.floor(cur) + '+';
+      }, 16);
+    });
+  }
+}
+window.addEventListener('scroll', animateCounters);
+animateCounters();
+
+// Mobile menu
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+// Send email
+function sendEmail() {
+  const name = document.getElementById('formName').value;
+  const email = document.getElementById('formEmail').value;
+  const company = document.getElementById('formCompany').value;
+  const service = document.getElementById('formService').value;
+  const message = document.getElementById('formMessage').value;
+  const subject = encodeURIComponent('Cerere ofertă - ' + (service || 'General'));
+  const body = encodeURIComponent(
+    'Nume: ' + name + '\nEmail: ' + email + '\nCompania: ' + company +
+    '\nServiciu: ' + service + '\n\nMesaj:\n' + message
+  );
+  window.open('mailto:alexandrustoiciu@gmail.com?subject=' + subject + '&body=' + body);
+}
+</script>
+</body>
+</html>
